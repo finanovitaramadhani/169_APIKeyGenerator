@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar User & Generate API Key</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        nav {
+            background:#222;
+            padding:12px;
+            margin-bottom:20px;
+        }
+        nav a {
+            color:white;
+            margin-right:18px;
+            text-decoration:none;
+            font-weight:bold;
+        }
+        nav a:hover {
+            text-decoration:underline;
+        }
+        input {
+            display: block;
+            width: 250px;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🔥 NAVBAR -->
+    <nav>
+        <a href="/">Home</a>
+        <a href="/admin-register">Register Admin</a>
+        <a href="/admin-login">Login Admin</a>
+        <a href="/admin-dashboard">Dashboard Admin</a>
+    </nav>
+
+    <h2>Daftar User & Generate API Key</h2>
+
+    <input type="text" id="firstName" placeholder="Nama Depan">
+    <input type="text" id="lastName" placeholder="Nama Belakang">
+    <input type="email" id="email" placeholder="Email">
+
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="apiKey" placeholder="API Key" readonly>
+        <button id="btnGenerate">Generate Key</button>
+    </div>
+
+    <button id="btnSave">Simpan</button>
+
+    <p id="message" style="color: green; font-weight: bold;"></p>
+
+<script>
+    // =============================================
+    //   GENERATE API KEY
+    // =============================================
+    document.getElementById("btnGenerate").addEventListener("click", async () => {
+        try {
+            const res = await fetch("/users/generate-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const data = await res.json();
+            document.getElementById("apiKey").value = data.apiKey;
+
+        } catch (err) {
+            alert("Gagal generate API Key");
+        }
+    });
+
+    // =============================================
+    //   SIMPAN USER + API KEY
+    // =============================================
+    document.getElementById("btnSave").addEventListener("click", async () => {
+        const firstName = document.getElementById("firstName").value;
+        const lastName  = document.getElementById("lastName").value;
+        const email     = document.getElementById("email").value;
+        const apiKey    = document.getElementById("apiKey").value;
+
+        if (!firstName || !lastName || !email || !apiKey) {
+            alert("Semua data harus diisi!");
+            return;
+        }
+
+        const res = await fetch("/users/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ firstName, lastName, email, apiKey })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+            alert(data.error);
+        } else {
+            document.getElementById("message").innerText = data.message;
+
+            // reset form
+            document.getElementById("firstName").value = "";
+            document.getElementById("lastName").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("apiKey").value = "";
+        }
+    });
+</script>
+
+</body>
+</html>
