@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial; padding: 25px; }
+    h2 { margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border-bottom: 1px solid #bbb; padding: 10px; text-align: left; }
+    nav {
+      background:#111;
+      padding:12px;
+      margin-bottom:20px;
+    }
+    nav a {
+      color:white;
+      margin-right:20px;
+      text-decoration:none;
+      font-weight:bold;
+    }
+    nav a:hover { text-decoration: underline; }
+    #info { margin-bottom: 15px; font-weight: bold; }
+    button { padding: 7px 12px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<!-- 🔥 NAVBAR -->
+<nav>
+  <a href="/">Home</a>
+  <a href="/admin-register">Register Admin</a>
+  <a href="/admin-login">Login Admin</a>
+  <a href="/admin-dashboard">Dashboard Admin</a>
+  <button onclick="logout()" style="float:right;background:#c00;color:white;border:none;">Logout</button>
+</nav>
+
+<h2>Dashboard Admin: Daftar User & API Key</h2>
+<p id="info"></p>
+
+<table id="tblUsers">
+  <thead>
+    <tr>
+      <th>ID User</th>
+      <th>Nama Depan</th>
+      <th>Nama Belakang</th>
+      <th>Email</th>
+      <th>API Key</th>
+      <th>Status Key</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const adminKey = localStorage.getItem("adminKey");
+if (!adminKey) location.href = "/admin-login";
+
+document.getElementById("info").innerText = "Admin Key: " + adminKey;
+
+async function loadUsers() {
+  const res = await fetch('/admin/users', {
+    headers: { 'x-admin-key': adminKey }
+  });
+  const data = await res.json();
+
+  const tbody = document.querySelector("#tblUsers tbody");
+  tbody.innerHTML = "";
+
+  data.users.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${u.first_name}</td>
+      <td>${u.last_name}</td>
+      <td>${u.email}</td>
+      <td>${u.api_key || '-'}</td>
+      <td>${u.status || '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+loadUsers();
+
+function logout() {
+  localStorage.removeItem("adminKey");
+  location.href = "/admin-login";
+}
+</script>
+
+</body>
+</html>
