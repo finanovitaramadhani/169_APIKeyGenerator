@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register Admin</title>
+  <style>
+    body { font-family: Arial; padding: 30px; }
+    input { width: 300px; padding: 8px; margin: 6px 0; }
+    button { padding: 8px 12px; }
+    nav { background:#222; padding:12px; margin-bottom:22px; }
+    nav a { color:white; margin-right:18px; text-decoration:none; font-weight:bold; }
+    nav a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 NAVBAR -->
+  <nav>
+    <a href="/">Home</a>
+    <a href="/admin-register">Register Admin</a>
+    <a href="/admin-login">Login Admin</a>
+    <a href="/admin-dashboard">Dashboard Admin</a>
+  </nav>
+
+  <h2>Register Admin</h2>
+
+  <input id="username" placeholder="Username"><br>
+  <input id="password" placeholder="Password" type="password"><br>
+
+  <button onclick="register()">Register</button>
+  <p id="msg"></p>
+
+<script>
+async function register() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  const r = await fetch('/admin/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+
+  const d = await r.json();
+  document.getElementById('msg').innerText = d.message || d.error;
+
+  if (r.ok) setTimeout(() => location.href = "/admin-login", 1500);
+}
+</script>
+</body>
+</html>
