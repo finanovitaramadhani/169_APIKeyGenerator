@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const cors = require("cors");
 const db = require("./db");
 
+
 const app = express();
 const PORT = 3000;
 
@@ -174,6 +175,9 @@ app.get("/admin-dashboard", (req, res) =>
 // -----------------------------
 // START SERVER
 // -----------------------------
+const open = require("open").default;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  open(`http://localhost:${PORT}`);
 });
